@@ -1,0 +1,1 @@
+cd /Users/a_20ro/Desktop/Frontend && python3 -m http.server 3000
