@@ -415,7 +415,7 @@
         
         // Check authentication
         if (!window.auth.isAuthenticated()) {
-            window.location.href = 'login.html';
+            window.location.href = 'https://studentorganizer.netlify.app/login.html';
         }
         
         // Check if we should show a specific semester
@@ -892,7 +892,7 @@
             } catch (error) {
                 console.error('Logout error:', error);
             } finally {
-                window.location.href = 'login.html';
+                window.location.href = 'https://studentorganizer.netlify.app/login.html';
             }
         });
         

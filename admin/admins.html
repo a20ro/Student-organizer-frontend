@@ -42,7 +42,7 @@
             <a href="audit-logs.html" class="sidebar-item"><i class="fas fa-list"></i>Audit Logs</a>
         </nav>
         <div class="pt-6 mt-6 border-t border-blue-900/60">
-            <button class="sidebar-item text-red-300 hover:text-red-200" onclick="window.location.href='login.html'">
+            <button class="sidebar-item text-red-300 hover:text-red-200" onclick="window.location.href='https://studentorganizer.netlify.app/login.html'">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Exit Admin</span>
             </button>
@@ -267,7 +267,7 @@
         async function ensureAdminAccessAdminsPage() {
             const token = window.api.getToken();
             if (!token) {
-                window.location.href = 'login.html';
+                window.location.href = 'https://studentorganizer.netlify.app/login.html';
                 return null;
             }
             try {
@@ -283,7 +283,7 @@
                 // Allow both admin and super_admin roles
                 if (!user || (user.role !== 'admin' && user.role !== 'super_admin')) {
                     window.api.removeToken();
-                    window.location.href = 'login.html';
+                    window.location.href = 'https://studentorganizer.netlify.app/login.html';
                     return null;
                 }
                 // Store current user's role for privilege checks
@@ -292,7 +292,7 @@
             } catch (error) {
                 console.error('Admin auth check failed:', error);
                 window.api.removeToken();
-                window.location.href = 'login.html';
+                window.location.href = 'https://studentorganizer.netlify.app/login.html';
                 return null;
             }
         }

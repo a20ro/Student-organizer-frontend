@@ -17,7 +17,7 @@ function isAuthenticated() {
  */
 function protectRoute() {
     if (!isAuthenticated()) {
-        window.location.href = 'login.html';
+        window.location.href = 'https://studentorganizer.netlify.app/login.html';
     }
 }
 

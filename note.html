@@ -308,7 +308,7 @@ Use **Markdown** to format your text:
         
         // Check authentication
         if (!window.auth.isAuthenticated()) {
-            window.location.href = 'login.html';
+            window.location.href = 'https://studentorganizer.netlify.app/login.html';
         }
         
         // Get note ID from URL
@@ -796,7 +796,7 @@ Use **Markdown** to format your text:
             } catch (error) {
                 console.error('Logout error:', error);
             } finally {
-                window.location.href = 'login.html';
+                window.location.href = 'https://studentorganizer.netlify.app/login.html';
             }
         });
         

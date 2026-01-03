@@ -324,7 +324,7 @@
         
         // Check authentication
         if (!window.auth.isAuthenticated()) {
-            window.location.href = 'login.html';
+            window.location.href = 'https://studentorganizer.netlify.app/login.html';
         }
         
         // Load semesters and courses
@@ -803,7 +803,7 @@
             } catch (error) {
                 console.error('Logout error:', error);
             } finally {
-                window.location.href = 'login.html';
+                window.location.href = 'https://studentorganizer.netlify.app/login.html';
             }
         });
         
