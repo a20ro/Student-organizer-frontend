@@ -1,5 +1,24 @@
 // API Configuration
-const API_BASE_URL = 'http://localhost:8000/api'; // Update this to your backend URL
+// API Configuration
+const API_CONFIG = {
+    // Development backend URL (default)
+    development: 'http://localhost:8000/api',
+    // Producion backend URL - REPLACE THIS when you host your backend
+    production: 'https://student-organizer-backend-oa5y.onrender.com/api'
+};
+
+// Determine which environment we are in
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+// Select the appropriate base URL
+const API_BASE_URL = isLocalhost ? API_CONFIG.development : API_CONFIG.production;
+
+console.log(`Environment: ${isLocalhost ? 'Development' : 'Production'}`);
+console.log(`API Base URL: ${API_BASE_URL}`);
+
+// Expose config to window for other scripts to use
+window.API_BASE_URL = API_BASE_URL;
+window.API_CONFIG = API_CONFIG;
 
 // Helper function to get stored token
 function getToken() {
@@ -20,7 +39,7 @@ function removeToken() {
 async function apiRequest(endpoint, options = {}) {
     const token = getToken();
     const url = `${API_BASE_URL}${endpoint}`;
-    
+
     const config = {
         headers: {
             'Content-Type': 'application/json',
@@ -47,7 +66,7 @@ async function apiRequest(endpoint, options = {}) {
 
     try {
         const response = await fetch(url, config);
-        
+
         // Handle non-JSON responses
         let data;
         const contentType = response.headers.get('content-type');
@@ -94,10 +113,10 @@ async function register(userData) {
         });
 
         console.log('Register response:', response);
-        
+
         // Check different possible token field names
         const token = response.token || response.access_token || response.data?.token || response.data?.access_token;
-        
+
         if (token) {
             setToken(token);
             console.log('✅ Token stored after registration');
@@ -128,10 +147,10 @@ async function login(email, password) {
         console.log('Login response:', response);
         console.log('Response keys:', Object.keys(response));
         console.log('Response type:', typeof response);
-        
+
         // Check different possible token field names
         let token = response.token || response.access_token || response.data?.token || response.data?.access_token;
-        
+
         // If response is nested in 'data' or 'user' object
         if (!token && response.data) {
             token = response.data.token || response.data.access_token;
@@ -139,7 +158,7 @@ async function login(email, password) {
         if (!token && response.user) {
             token = response.user.token || response.user.access_token;
         }
-        
+
         if (token) {
             setToken(token);
             console.log('✅ Token stored successfully');
@@ -149,7 +168,7 @@ async function login(email, password) {
         } else {
             console.error('❌ No token found in response');
             console.error('Full response:', JSON.stringify(response, null, 2));
-            
+
             // Check if maybe it's session-based (no token needed)
             if (response.user || response.message) {
                 console.warn('⚠️ Response has user/message but no token - might be session-based auth');
@@ -175,7 +194,7 @@ async function logout() {
         await apiRequest('/logout', {
             method: 'POST',
         });
-        
+
         removeToken();
         return { success: true };
     } catch (error) {
@@ -195,14 +214,14 @@ async function getCurrentUser() {
         const config = {
             method: 'GET',
         };
-        
+
         // Only add Authorization header if we have a real token (not session-based)
         if (token && token !== 'session-based') {
             // Token will be added automatically by apiRequest
         } else {
             console.log('Making request without Authorization header (session-based)');
         }
-        
+
         const response = await apiRequest('/me', config);
         return response;
     } catch (error) {
@@ -418,7 +437,7 @@ async function getEvents(params = {}) {
         if (params.start_date) query.append('start_date', params.start_date);
         if (params.end_date) query.append('end_date', params.end_date);
         const qs = query.toString() ? `?${query.toString()}` : '';
-        
+
         const response = await apiRequest(`/events${qs}`, {
             method: 'GET',
         });
@@ -571,7 +590,7 @@ async function uploadAttachment(file, attachableType = null, attachableId = null
         const formData = new FormData();
         // Laravel typically expects 'file' as the field name
         formData.append('file', file);
-        
+
         // Add attachable info if provided
         if (attachableType) {
             formData.append('attachable_type', attachableType);
@@ -579,12 +598,12 @@ async function uploadAttachment(file, attachableType = null, attachableId = null
         if (attachableId) {
             formData.append('attachable_id', attachableId);
         }
-        
+
         const token = getToken();
         if (!token) {
             throw new Error('No authentication token found');
         }
-        
+
         console.log('Uploading file:', {
             name: file.name,
             size: file.size,
@@ -592,7 +611,7 @@ async function uploadAttachment(file, attachableType = null, attachableId = null
             attachableType: attachableType,
             attachableId: attachableId
         });
-        
+
         const response = await fetch(`${API_BASE_URL}/attachments/upload`, {
             method: 'POST',
             headers: {
@@ -601,13 +620,13 @@ async function uploadAttachment(file, attachableType = null, attachableId = null
             },
             body: formData,
         });
-        
+
         if (!response.ok) {
             let errorMessage = 'Upload failed';
             try {
                 const errorData = await response.json();
                 console.error('Upload error response:', errorData);
-                
+
                 // Handle Laravel validation errors
                 if (errorData.errors) {
                     const errorMessages = Object.values(errorData.errors).flat();
@@ -620,12 +639,12 @@ async function uploadAttachment(file, attachableType = null, attachableId = null
                 console.error('Error response text:', text);
                 errorMessage = `HTTP error! status: ${response.status}`;
             }
-            
+
             const error = new Error(errorMessage);
             error.status = response.status;
             throw error;
         }
-        
+
         const result = await response.json();
         console.log('Upload successful:', result);
         return result;
@@ -641,16 +660,16 @@ async function downloadAttachment(attachmentId) {
         if (!token) {
             throw new Error('No authentication token found');
         }
-        
+
         console.log('Downloading attachment:', attachmentId);
-        
+
         const response = await fetch(`${API_BASE_URL}/attachments/${attachmentId}/download`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
         });
-        
+
         if (!response.ok) {
             let errorMessage = 'Download failed';
             try {
@@ -661,7 +680,7 @@ async function downloadAttachment(attachmentId) {
             }
             throw new Error(errorMessage);
         }
-        
+
         // Get filename from Content-Disposition header
         const contentDisposition = response.headers.get('Content-Disposition');
         let filename = 'download';
@@ -677,7 +696,7 @@ async function downloadAttachment(attachmentId) {
                 }
             }
         }
-        
+
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -687,7 +706,7 @@ async function downloadAttachment(attachmentId) {
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
-        
+
         console.log('Download successful:', filename);
     } catch (error) {
         console.error('Download attachment error:', error);
@@ -719,7 +738,7 @@ async function getTransactions(params = {}) {
         if (params.end_date) queryParams.append('end_date', params.end_date);
         if (params.month) queryParams.append('month', params.month);
         if (params.year) queryParams.append('year', params.year);
-        
+
         const queryString = queryParams.toString();
         const endpoint = `/transactions${queryString ? `?${queryString}` : ''}`;
         const response = await apiRequest(endpoint, {
@@ -787,7 +806,7 @@ async function getTransactionSummary(params = {}) {
         const queryParams = new URLSearchParams();
         if (params.month) queryParams.append('month', params.month);
         if (params.year) queryParams.append('year', params.year);
-        
+
         const queryString = queryParams.toString();
         const endpoint = `/transactions/summary${queryString ? `?${queryString}` : ''}`;
         const response = await apiRequest(endpoint, {
@@ -805,7 +824,7 @@ async function getTransactionReports(params = {}) {
         const queryParams = new URLSearchParams();
         if (params.month) queryParams.append('month', params.month);
         if (params.year) queryParams.append('year', params.year);
-        
+
         const queryString = queryParams.toString();
         const endpoint = `/transactions/reports${queryString ? `?${queryString}` : ''}`;
         const response = await apiRequest(endpoint, {
@@ -824,7 +843,7 @@ async function getBudgets(params = {}) {
         if (params.category) queryParams.append('category', params.category);
         if (params.month) queryParams.append('month', params.month);
         if (params.year) queryParams.append('year', params.year);
-        
+
         const queryString = queryParams.toString();
         const endpoint = `/budgets${queryString ? `?${queryString}` : ''}`;
         const response = await apiRequest(endpoint, {
@@ -1192,7 +1211,7 @@ async function updateAdminUserRole(id, role) {
         console.log('Updating admin role:', { id, role });
         const requestBody = { role: role };
         console.log('Request body:', requestBody);
-        
+
         const response = await apiRequest(`/admin/users/${id}/role`, {
             method: 'PUT',
             body: requestBody,
@@ -1243,7 +1262,7 @@ async function updateAdminUser(id, data) {
     try {
         // Backend has specific endpoints, so we'll make multiple calls if needed
         const results = [];
-        
+
         // Update role if changed
         if (data.role !== undefined) {
             try {
@@ -1255,7 +1274,7 @@ async function updateAdminUser(id, data) {
                 throw error; // Re-throw to show error to user
             }
         }
-        
+
         // Update status if changed
         if (data.status === 'suspended') {
             try {
@@ -1274,18 +1293,18 @@ async function updateAdminUser(id, data) {
                 throw error;
             }
         }
-        
+
         // Note: Name/email updates are not supported by backend (returns 405)
         // Backend only supports role and status updates via specific endpoints
         if (data.name !== undefined || data.email !== undefined) {
             console.warn('Name/email updates are not supported by the backend API');
             // Don't throw error - just log a warning and continue with role/status updates
         }
-        
+
         if (results.length === 0) {
             throw new Error('No valid fields to update');
         }
-        
+
         return results[0]; // Return first result
     } catch (error) {
         console.error('Update admin user error:', error);
