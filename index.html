@@ -127,7 +127,7 @@
 
 <body>
     <!-- Sidebar -->
-    <div class="sidebar text-white p-6">
+    <div class="sidebar d-none d-md-block text-white p-6">
         <!-- Logo -->
         <div class="flex items-center mb-10">
             <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center mr-3 shadow-lg">
@@ -191,116 +191,221 @@
         </nav>
     </div>
 
+    <!-- Mobile Sidebar (Bootstrap Offcanvas) -->
+    <div class="offcanvas offcanvas-start bg-primary text-white" tabindex="-1" id="mobileSidebar"
+        aria-labelledby="mobileSidebarLabel">
+        <div class="offcanvas-header pt-6 px-6">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center mr-3 shadow-lg">
+                    <i class="fas fa-graduation-cap text-xl text-blue-600"></i>
+                </div>
+                <h5 class="offcanvas-title font-bold" id="mobileSidebarLabel">Student Tracker</h5>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-6 pt-0">
+            <nav class="space-y-1 mt-4">
+                <a href="index.html" class="sidebar-item active flex items-center px-4 py-3 rounded-lg">
+                    <i class="fas fa-home w-5 mr-3"></i>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+                <a href="semesters.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-calendar-alt w-5 mr-3"></i>
+                    <span class="font-medium">Semesters</span>
+                </a>
+                <a href="courses.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-book w-5 mr-3"></i>
+                    <span class="font-medium">Courses</span>
+                </a>
+                <a href="assessments.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-clipboard-list w-5 mr-3"></i>
+                    <span class="font-medium">Assessments</span>
+                </a>
+                <a href="notes.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-sticky-note w-5 mr-3"></i>
+                    <span class="font-medium">Notes</span>
+                </a>
+                <a href="/events.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-calendar w-5 mr-3"></i>
+                    <span class="font-medium">Events</span>
+                </a>
+                <a href="/budget.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-wallet w-5 mr-3"></i>
+                    <span class="font-medium">Budget</span>
+                </a>
+                <a href="/goals.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-bullseye w-5 mr-3"></i>
+                    <span class="font-medium">Goals</span>
+                </a>
+                <a href="/tasks.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-tasks w-5 mr-3"></i>
+                    <span class="font-medium">Tasks</span>
+                </a>
+                <a href="/habits.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-chart-line w-5 mr-3"></i>
+                    <span class="font-medium">Habits</span>
+                </a>
+                <div class="pt-6 mt-6 border-t border-blue-400 border-opacity-30">
+                    <a href="#" id="mobileLogoutButton"
+                        class="sidebar-item flex items-center px-4 py-3 rounded-lg text-red-200 hover:text-red-100 hover:bg-red-500 hover:bg-opacity-20 text-decoration-none">
+                        <i class="fas fa-sign-out-alt w-5 mr-3"></i>
+                        <span class="font-medium">Logout</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <div class="main-content">
         <!-- Top Header -->
-        <header class="bg-white shadow-sm px-8 py-5 flex items-center justify-between sticky top-0 z-50">
-            <div class="flex-1 max-w-lg">
-                <div class="relative">
-                    <input id="searchInput" type="text" placeholder="Search anything..."
-                        class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400">
-                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    <!-- Search Results Dropdown -->
-                    <div id="searchResults"
-                        class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 max-h-96 overflow-y-auto z-50">
-                        <div id="searchResultsContent" class="p-2">
-                            <!-- Results will be displayed here -->
+        <header
+            class="bg-white shadow-sm px-4 md:px-8 py-4 md:py-5 flex items-center justify-between sticky top-0 z-50">
+            <div class="flex items-center">
+                <!-- Mobile Menu Toggle -->
+                <button class="btn btn-link link-dark d-md-none me-3 p-0" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#mobileSidebar">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+
+                <div class="flex-1 max-w-lg d-none d-sm-block">
+                    <div class="relative">
+                        <input id="searchInput" type="text" placeholder="Search anything..."
+                            class="w-full pl-11 pr-4 py-2 md:py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 text-gray-700 placeholder-gray-400">
+                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <!-- Search Results Dropdown -->
+                        <div id="searchResults"
+                            class="hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 max-h-96 overflow-y-auto z-50">
+                            <div id="searchResultsContent" class="p-2">
+                                <!-- Results will be displayed here -->
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="flex items-center space-x-6">
+            <div class="flex items-center space-x-3 md:space-x-6">
                 <!-- Notifications -->
                 <div class="relative">
                     <button
-                        class="relative p-2.5 text-gray-600 hover:text-blue-600 transition-colors rounded-lg hover:bg-gray-50">
-                        <i class="fas fa-bell text-xl"></i>
+                        class="relative p-2 text-gray-600 hover:text-blue-600 transition-colors rounded-lg hover:bg-gray-50">
+                        <i class="fas fa-bell text-lg md:text-xl"></i>
                         <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
                     </button>
                 </div>
 
                 <!-- User Profile -->
-                <div class="flex items-center space-x-3 pl-6 border-l border-gray-200">
-                    <div class="w-11 h-11 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md"
+                <div class="flex items-center space-x-2 md:space-x-3 pl-3 md:pl-6 border-l border-gray-200">
+                    <div class="w-9 h-9 md:w-11 md:h-11 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md"
                         id="userAvatar">
-                        <span id="userInitials" class="text-sm">U</span>
+                        <span id="userInitials" class="text-xs md:text-sm">U</span>
                     </div>
-                    <div>
-                        <p class="text-sm font-semibold text-gray-800" id="userName">Loading...</p>
+                    <div class="d-none d-lg-block">
+                        <p class="text-xs md:text-sm font-semibold text-gray-800" id="userName">Loading...</p>
                     </div>
                 </div>
             </div>
         </header>
 
         <!-- Main Content Area -->
-        <main class="p-8">
+        <main class="p-4 md:p-8">
+            <!-- Mobile Search (Visible only on very small screens) -->
+            <div class="d-sm-none mb-6">
+                <div class="relative">
+                    <input id="mobileSearchInput" type="text" placeholder="Search anything..."
+                        class="w-full pl-11 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-700 placeholder-gray-400 shadow-sm">
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+
             <!-- Welcome Banner -->
-            <div class="welcome-banner rounded-2xl p-10 mb-8 text-white shadow-lg">
+            <div class="welcome-banner rounded-2xl p-6 md:p-10 mb-8 text-white shadow-lg text-center md:text-left">
                 <div>
-                    <p class="text-blue-100 mb-2 text-sm font-medium" id="currentDate">Loading date...</p>
-                    <h1 class="text-4xl font-bold mb-2" id="welcomeMessage">Welcome back!</h1>
-                    <p class="text-blue-100 text-lg">Stay organized and track your academic progress</p>
+                    <p class="text-blue-100 mb-2 text-xs md:text-sm font-medium" id="currentDate">Loading date...</p>
+                    <h1 class="text-2xl md:text-4xl font-bold mb-2" id="welcomeMessage">Welcome back!</h1>
+                    <p class="text-blue-100 text-base md:text-lg">Stay organized and track your academic progress</p>
                 </div>
             </div>
 
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                <div class="stat-card blue-card bg-white rounded-xl p-8 shadow-sm"
-                    onclick="window.location.href='semesters.html'" style="cursor: pointer;">
-                    <div class="flex flex-col">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-14 h-14 bg-blue-50 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-calendar-alt text-blue-600 text-xl"></i>
+            <div class="row g-4 mb-10">
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="stat-card blue-card bg-white rounded-xl p-6 md:p-8 shadow-sm h-100"
+                        onclick="window.location.href='semesters.html'" style="cursor: pointer;">
+                        <div class="flex flex-col">
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-12 h-12 md:w-14 md:h-14 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-calendar-alt text-blue-600 text-xl"></i>
+                                </div>
                             </div>
+                            <p class="text-gray-500 text-xs md:text-sm mb-2 font-medium">Total Semesters</p>
+                            <p class="text-2xl md:text-4xl font-bold text-gray-800" id="semesterCount">
+                                <span
+                                    class="loading-skeleton inline-block w-12 h-8 md:h-10 bg-gray-200 rounded animate-pulse"></span>
+                            </p>
                         </div>
-                        <p class="text-gray-500 text-sm mb-2 font-medium">Total Semesters</p>
-                        <p class="text-4xl font-bold text-gray-800" id="semesterCount">
-                            <span
-                                class="loading-skeleton inline-block w-12 h-10 bg-gray-200 rounded animate-pulse"></span>
-                        </p>
                     </div>
                 </div>
 
-                <div class="stat-card green-card bg-white rounded-xl p-8 shadow-sm"
-                    onclick="window.location.href='courses.html'" style="cursor: pointer;">
-                    <div class="flex flex-col">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-14 h-14 bg-green-50 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-book text-green-600 text-xl"></i>
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="stat-card green-card bg-white rounded-xl p-6 md:p-8 shadow-sm h-100"
+                        onclick="window.location.href='courses.html'" style="cursor: pointer;">
+                        <div class="flex flex-col">
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-12 h-12 md:w-14 md:h-14 bg-green-50 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-book text-green-600 text-xl"></i>
+                                </div>
                             </div>
+                            <p class="text-gray-500 text-xs md:text-sm mb-2 font-medium">Active Courses</p>
+                            <p class="text-2xl md:text-4xl font-bold text-gray-800" id="courseCount">
+                                <span
+                                    class="loading-skeleton inline-block w-12 h-8 md:h-10 bg-gray-200 rounded animate-pulse"></span>
+                            </p>
                         </div>
-                        <p class="text-gray-500 text-sm mb-2 font-medium">Active Courses</p>
-                        <p class="text-4xl font-bold text-gray-800" id="courseCount">
-                            <span
-                                class="loading-skeleton inline-block w-12 h-10 bg-gray-200 rounded animate-pulse"></span>
-                        </p>
                     </div>
                 </div>
 
-                <div class="stat-card purple-card bg-white rounded-xl p-8 shadow-sm"
-                    onclick="window.location.href='notes.html'" style="cursor: pointer;">
-                    <div class="flex flex-col">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-14 h-14 bg-purple-50 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-sticky-note text-purple-600 text-xl"></i>
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="stat-card purple-card bg-white rounded-xl p-6 md:p-8 shadow-sm h-100"
+                        onclick="window.location.href='notes.html'" style="cursor: pointer;">
+                        <div class="flex flex-col">
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-12 h-12 md:w-14 md:h-14 bg-purple-50 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-sticky-note text-purple-600 text-xl"></i>
+                                </div>
                             </div>
+                            <p class="text-gray-500 text-xs md:text-sm mb-2 font-medium">Total Notes</p>
+                            <p class="text-2xl md:text-4xl font-bold text-gray-800" id="noteCount">0</p>
                         </div>
-                        <p class="text-gray-500 text-sm mb-2 font-medium">Total Notes</p>
-                        <p class="text-4xl font-bold text-gray-800" id="noteCount">0</p>
                     </div>
                 </div>
 
-                <div class="stat-card yellow-card bg-white rounded-xl p-8 shadow-sm"
-                    onclick="window.location.href='budget.html'" style="cursor: pointer;">
-                    <div class="flex flex-col">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-14 h-14 bg-yellow-50 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-wallet text-yellow-600 text-xl"></i>
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="stat-card yellow-card bg-white rounded-xl p-6 md:p-8 shadow-sm h-100"
+                        onclick="window.location.href='budget.html'" style="cursor: pointer;">
+                        <div class="flex flex-col">
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-12 h-12 md:w-14 md:h-14 bg-yellow-50 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-wallet text-yellow-600 text-xl"></i>
+                                </div>
                             </div>
+                            <p class="text-gray-500 text-xs md:text-sm mb-2 font-medium">Net Balance</p>
+                            <p class="text-2xl md:text-4xl font-bold text-gray-800" id="budgetBalance">$0</p>
                         </div>
-                        <p class="text-gray-500 text-sm mb-2 font-medium">Net Balance</p>
-                        <p class="text-4xl font-bold text-gray-800" id="budgetBalance">$0</p>
                     </div>
                 </div>
             </div>

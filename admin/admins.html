@@ -1,29 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admins - Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <script src="../js/api.js"></script>
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        body { background: #f8fafc; margin: 0; }
-        .sidebar { background: linear-gradient(180deg, #0f172a 0%, #111827 100%); min-height: 100vh; width: 260px; position: fixed; left: 0; top: 0; box-shadow: 2px 0 10px rgba(0,0,0,0.2); }
-        .sidebar-item { display: flex; align-items: center; padding: 0.75rem 1rem; border-radius: 0.5rem; color: #e5e7eb; margin-bottom: 0.25rem; text-decoration: none; font-size: 0.95rem; }
-        .sidebar-item i { width: 1.25rem; margin-right: 0.75rem; }
-        .sidebar-item:hover { background: rgba(255,255,255,0.06); }
-        .sidebar-item.active { background: rgba(59,130,246,0.25); color: #fff; }
-        .main-content { margin-left: 260px; min-height: 100vh; }
-        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; } }
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f8fafc;
+            margin: 0;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+            min-height: 100vh;
+            width: 260px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            color: #e5e7eb;
+            margin-bottom: 0.25rem;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-item i {
+            width: 1.25rem;
+            margin-right: 0.75rem;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .sidebar-item.active {
+            background: rgba(59, 130, 246, 0.25);
+            color: #fff;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <aside class="sidebar text-white p-6">
+    <aside class="sidebar d-none d-md-block text-white p-6">
         <div class="flex items-center mb-8">
             <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center mr-3 shadow-lg">
                 <i class="fas fa-shield-alt text-lg"></i>
@@ -42,42 +97,115 @@
             <a href="audit-logs.html" class="sidebar-item"><i class="fas fa-list"></i>Audit Logs</a>
         </nav>
         <div class="pt-6 mt-6 border-t border-blue-900/60">
-            <button class="sidebar-item text-red-300 hover:text-red-200" onclick="window.location.href='https://studentorganizer.netlify.app/login.html'">
+            <button class="sidebar-item text-red-300 hover:text-red-200 w-full"
+                onclick="window.location.href='https://studentorganizer.netlify.app/login.html'">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Exit Admin</span>
             </button>
         </div>
     </aside>
 
-    <main class="main-content">
-        <header class="bg-white shadow-sm px-8 py-5 flex items-center justify-between sticky top-0 z-10">
-            <div>
-                <h2 class="text-2xl font-bold text-gray-800">Admins / Staff</h2>
-                <p class="text-sm text-gray-500">Manage admin accounts and roles</p>
+    <!-- Mobile Sidebar (Offcanvas) -->
+    <div class="offcanvas offcanvas-start bg-slate-900 text-white" tabindex="-1" id="mobileSidebar"
+        aria-labelledby="mobileSidebarLabel">
+        <div class="offcanvas-header pt-6 px-6">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center mr-3 shadow-lg">
+                    <i class="fas fa-shield-alt text-lg text-white"></i>
+                </div>
+                <h5 class="offcanvas-title font-bold" id="mobileSidebarLabel">Admin Panel</h5>
             </div>
-            <div class="flex gap-3">
-                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50" onclick="exportToXML('admins')">
-                    <i class="fas fa-file-export mr-2"></i>Export XML Report
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-6 pt-0">
+            <nav class="space-y-1 mt-4">
+                <a href="dashboard.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-home w-5 mr-3"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="admins.html"
+                    class="sidebar-item active flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-user-shield w-5 mr-3"></i>
+                    <span>Admins / Staff</span>
+                </a>
+                <a href="students.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-user-graduate w-5 mr-3"></i>
+                    <span>Students</span>
+                </a>
+                <a href="announcements.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-bullhorn w-5 mr-3"></i>
+                    <span>Announcements</span>
+                </a>
+                <a href="notifications.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-bell w-5 mr-3"></i>
+                    <span>Notifications</span>
+                </a>
+                <a href="audit-logs.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-list w-5 mr-3"></i>
+                    <span>Audit Logs</span>
+                </a>
+                <div class="pt-6 mt-6 border-t border-blue-900/60">
+                    <button
+                        class="sidebar-item text-red-300 hover:text-red-200 w-full flex items-center px-4 py-3 rounded-lg"
+                        onclick="window.location.href='https://studentorganizer.netlify.app/login.html'">
+                        <i class="fas fa-sign-out-alt w-5 mr-3"></i>
+                        <span>Exit Admin</span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <header
+            class="bg-white shadow-sm px-4 md:px-8 py-4 md:py-5 flex items-center justify-between sticky top-0 z-10">
+            <div class="flex items-center">
+                <button class="btn btn-link link-dark d-md-none me-3 p-0" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#mobileSidebar">
+                    <i class="fas fa-bars text-xl"></i>
                 </button>
-                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700" onclick="openAddAdminModal()">
-                    <i class="fas fa-plus mr-2"></i>New Admin
+                <div>
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">Admins / Staff</h2>
+                    <p class="text-xs md:text-sm text-gray-500">Manage admin accounts and roles</p>
+                </div>
+            </div>
+            <div class="flex gap-2 md:gap-3">
+                <button
+                    class="p-2 md:px-4 md:py-2 border border-gray-300 rounded-lg text-xs md:text-sm text-gray-700 hover:bg-gray-50"
+                    onclick="exportToXML('admins')">
+                    <i class="fas fa-file-export md:mr-2"></i><span class="d-none d-lg-inline">Export XML</span>
+                </button>
+                <button
+                    class="p-2 md:px-4 md:py-2 bg-blue-600 text-white rounded-lg text-xs md:text-sm hover:bg-blue-700"
+                    onclick="openAddAdminModal()">
+                    <i class="fas fa-plus md:mr-2"></i><span class="d-none d-sm-inline">New Admin</span>
                 </button>
             </div>
         </header>
 
-        <section class="p-8 space-y-4">
+        <section class="p-4 md:p-8 space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div class="relative max-w-xs w-full">
                     <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    <input id="searchInput" class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search admins by name or email">
+                    <input id="searchInput"
+                        class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Search admins by name or email">
                 </div>
                 <div class="flex gap-2 text-sm">
-                    <select id="roleFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="roleFilter"
+                        class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">All roles</option>
                         <option value="admin">Admin</option>
                         <option value="super_admin">Super Admin</option>
                     </select>
-                    <select id="statusFilter" class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="statusFilter"
+                        class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">All statuses</option>
                         <option value="active">Active</option>
                         <option value="suspended">Suspended</option>
@@ -110,7 +238,8 @@
     </main>
 
     <!-- Add Admin Modal -->
-    <div id="addAdminModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div id="addAdminModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
             <div class="p-6 border-b border-gray-200 flex items-center justify-between">
                 <h3 class="text-xl font-semibold text-gray-800">Add New Admin</h3>
@@ -121,33 +250,40 @@
             <form id="addAdminForm" class="p-6 space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
-                    <input type="text" id="addAdminName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="addAdminName" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <input type="email" id="addAdminEmail" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="email" id="addAdminEmail" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                    <input type="password" id="addAdminPassword" required minlength="8" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="password" id="addAdminPassword" required minlength="8"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
-                    <input type="password" id="addAdminPasswordConfirm" required minlength="8" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="password" id="addAdminPasswordConfirm" required minlength="8"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
-                    <select id="addAdminRole" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="addAdminRole" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="admin">Admin</option>
                         <option value="super_admin">Super Admin</option>
                         <option value="student">Student</option>
                     </select>
                 </div>
                 <div class="flex gap-3 pt-4">
-                    <button type="submit" class="flex-1 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition">
+                    <button type="submit"
+                        class="flex-1 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition">
                         Create Admin
                     </button>
-                    <button type="button" onclick="closeAddAdminModal()" class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                    <button type="button" onclick="closeAddAdminModal()"
+                        class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
                         Cancel
                     </button>
                 </div>
@@ -156,7 +292,8 @@
     </div>
 
     <!-- Edit Admin Modal -->
-    <div id="editAdminModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div id="editAdminModal"
+        class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
             <div class="p-6 border-b border-gray-200 flex items-center justify-between">
                 <h3 class="text-xl font-semibold text-gray-800">Edit Admin</h3>
@@ -168,15 +305,18 @@
                 <input type="hidden" id="editAdminId">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
-                    <input type="text" id="editAdminName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="editAdminName" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <input type="email" id="editAdminEmail" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="email" id="editAdminEmail" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
-                    <select id="editAdminRole" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="editAdminRole" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="admin">Admin</option>
                         <option value="super_admin">Super Admin</option>
                         <option value="student">Student</option>
@@ -184,16 +324,19 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                    <select id="editAdminStatus" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="editAdminStatus" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="active">Active</option>
                         <option value="suspended">Suspended</option>
                     </select>
                 </div>
                 <div class="flex gap-3 pt-4">
-                    <button type="submit" class="flex-1 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition">
+                    <button type="submit"
+                        class="flex-1 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition">
                         Update Admin
                     </button>
-                    <button type="button" onclick="closeEditModal()" class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                    <button type="button" onclick="closeEditModal()"
+                        class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
                         Cancel
                     </button>
                 </div>
@@ -236,8 +379,8 @@
                 const roleColor = role === 'super_admin'
                     ? 'bg-purple-100 text-purple-700'
                     : role === 'admin'
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'bg-gray-100 text-gray-700';
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'bg-gray-100 text-gray-700';
 
                 const statusColor = status === 'active'
                     ? 'bg-green-100 text-green-700'
@@ -402,7 +545,7 @@
             } catch (error) {
                 console.error('Failed to delete admin:', error);
                 let errorMsg = error.message || error.data?.message || 'Failed to delete admin. Please try again.';
-                
+
                 // Provide more specific error message for 403 errors
                 if (error.status === 403) {
                     if (currentUserRole === 'super_admin') {
@@ -411,7 +554,7 @@
                         errorMsg = 'You do not have permission to delete admin users. Only Super Admins can delete admins.';
                     }
                 }
-                
+
                 alert(errorMsg);
             }
         }
@@ -423,16 +566,16 @@
             const email = document.getElementById('editAdminEmail').value;
             const role = document.getElementById('editAdminRole').value;
             const status = document.getElementById('editAdminStatus').value;
-            
+
             // Check if name/email changed (backend doesn't support updating these)
             const currentAdmin = adminsList.find(a => a.id === id);
             const nameChanged = currentAdmin && currentAdmin.name !== name;
             const emailChanged = currentAdmin && currentAdmin.email !== email;
-            
+
             if (nameChanged || emailChanged) {
                 alert('Note: Name and email updates are not supported. Only role and status will be updated.');
             }
-            
+
             const data = {
                 role: role,
                 status: status,
@@ -450,7 +593,7 @@
                 console.error('Error status:', error.status);
                 console.error('Error message:', error.message);
                 console.error('Error data:', error.data);
-                
+
                 // Show detailed validation errors if available
                 let errorMsg = error.message || 'Failed to update admin. Please try again.';
                 if (error.data && error.data.errors) {
@@ -461,7 +604,7 @@
                 } else if (error.data && error.data.message) {
                     errorMsg = error.data.message;
                 }
-                
+
                 alert(errorMsg);
             }
         });
@@ -521,7 +664,7 @@ ${data.map(item => `        <item>
             e.preventDefault();
             const password = document.getElementById('addAdminPassword').value;
             const passwordConfirm = document.getElementById('addAdminPasswordConfirm').value;
-            
+
             if (password !== passwordConfirm) {
                 alert('Passwords do not match');
                 return;
@@ -580,11 +723,11 @@ ${data.map(item => `        <item>
 
             document.getElementById('roleFilter').addEventListener('change', loadAdmins);
             document.getElementById('statusFilter').addEventListener('change', loadAdmins);
-            
+
             // Add search functionality
             document.getElementById('searchInput').addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase();
-                const filtered = adminsList.filter(admin => 
+                const filtered = adminsList.filter(admin =>
                     (admin.name || '').toLowerCase().includes(searchTerm) ||
                     (admin.email || '').toLowerCase().includes(searchTerm)
                 );
@@ -601,4 +744,5 @@ ${data.map(item => `        <item>
         window.exportToXML = exportToXML;
     </script>
 </body>
+
 </html>

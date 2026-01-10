@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Note Editor - Student Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         * {
             font-family: 'Inter', sans-serif;
         }
-        
+
         body {
             background: #f8fafc;
             margin: 0;
             padding: 0;
             overflow-x: hidden;
-        }   
-        
+        }
+
         .sidebar {
             background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
             min-height: 100vh;
@@ -32,41 +37,41 @@
             z-index: 1000;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         }
-        
+
         .sidebar-item {
             transition: all 0.2s ease;
             cursor: pointer;
         }
-        
+
         .sidebar-item:hover {
             background: rgba(255, 255, 255, 0.08);
         }
-        
+
         .sidebar-item.active {
             background: rgba(255, 255, 255, 0.15);
             border-left: 3px solid #60a5fa;
         }
-        
+
         .main-content {
             margin-left: 260px;
             min-height: 100vh;
         }
-        
+
         .editor-container {
             display: flex;
             flex-direction: column;
             height: calc(100vh - 80px);
         }
-        
+
         .editor-pane {
             flex: 1;
             overflow-y: auto;
         }
-        
+
         .preview-pane {
             display: none;
         }
-        
+
         .markdown-editor {
             width: 100%;
             height: 100%;
@@ -79,12 +84,12 @@
             resize: none;
             background: #ffffff;
         }
-        
+
         .markdown-preview {
             max-width: 800px;
             margin: 0 auto;
         }
-        
+
         .markdown-preview h1 {
             font-size: 2rem;
             font-weight: 700;
@@ -93,26 +98,26 @@
             border-bottom: 2px solid #e5e7eb;
             padding-bottom: 0.5rem;
         }
-        
+
         .markdown-preview h2 {
             font-size: 1.5rem;
             font-weight: 600;
             margin-top: 1.25rem;
             margin-bottom: 0.75rem;
         }
-        
+
         .markdown-preview h3 {
             font-size: 1.25rem;
             font-weight: 600;
             margin-top: 1rem;
             margin-bottom: 0.5rem;
         }
-        
+
         .markdown-preview p {
             margin-bottom: 1rem;
             line-height: 1.7;
         }
-        
+
         .markdown-preview code {
             background: #f3f4f6;
             padding: 0.2rem 0.4rem;
@@ -120,7 +125,7 @@
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
             font-size: 0.9em;
         }
-        
+
         .markdown-preview pre {
             background: #1f2937;
             color: #f9fafb;
@@ -129,18 +134,19 @@
             overflow-x: auto;
             margin-bottom: 1rem;
         }
-        
+
         .markdown-preview pre code {
             background: transparent;
             padding: 0;
             color: inherit;
         }
-        
-        .markdown-preview ul, .markdown-preview ol {
+
+        .markdown-preview ul,
+        .markdown-preview ol {
             margin-bottom: 1rem;
             padding-left: 2rem;
         }
-        
+
         .markdown-preview blockquote {
             border-left: 4px solid #3b82f6;
             padding-left: 1rem;
@@ -148,22 +154,23 @@
             color: #6b7280;
             font-style: italic;
         }
-        
-        
+
+
         @media (max-width: 768px) {
             .sidebar {
-                transform: translateX(-100%);
+                display: none;
             }
-            
+
             .main-content {
                 margin-left: 0;
             }
         }
     </style>
 </head>
+
 <body>
     <!-- Sidebar -->
-    <div class="sidebar text-white p-6">
+    <div class="sidebar d-none d-md-block text-white p-6">
         <!-- Logo -->
         <div class="flex items-center mb-10">
             <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center mr-3 shadow-lg">
@@ -174,7 +181,7 @@
                 <p class="text-xs text-blue-200">Organize & Succeed</p>
             </div>
         </div>
-        
+
         <!-- Navigation -->
         <nav class="space-y-1">
             <a href="index.html" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
@@ -197,7 +204,7 @@
                 <i class="fas fa-sticky-note w-5 mr-3"></i>
                 <span class="font-medium">Notes</span>
             </a>
-            <a href="/events.html" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
+            <a href="events.html" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
                 <i class="fas fa-calendar w-5 mr-3"></i>
                 <span class="font-medium">Events</span>
             </a>
@@ -205,66 +212,152 @@
                 <i class="fas fa-wallet w-5 mr-3"></i>
                 <span class="font-medium">Budget</span>
             </a>
-            <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
+            <a href="goals.html" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
                 <i class="fas fa-bullseye w-5 mr-3"></i>
                 <span class="font-medium">Goals</span>
             </a>
-            <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
+            <a href="tasks.html" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
                 <i class="fas fa-tasks w-5 mr-3"></i>
                 <span class="font-medium">Tasks</span>
             </a>
-            <a href="#" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
+            <a href="habits.html" class="sidebar-item flex items-center px-4 py-3 rounded-lg">
                 <i class="fas fa-chart-line w-5 mr-3"></i>
                 <span class="font-medium">Habits</span>
             </a>
             <div class="pt-6 mt-6 border-t border-blue-400 border-opacity-30">
-                <a href="#" id="logoutButton" class="sidebar-item flex items-center px-4 py-3 rounded-lg text-red-200 hover:text-red-100 hover:bg-red-500 hover:bg-opacity-20">
+                <a href="#" onclick="handleLogout()"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-red-200 hover:text-red-100 hover:bg-red-500 hover:bg-opacity-20">
                     <i class="fas fa-sign-out-alt w-5 mr-3"></i>
                     <span class="font-medium">Logout</span>
                 </a>
             </div>
         </nav>
     </div>
-    
+
+    <!-- Mobile Sidebar (Offcanvas) -->
+    <div class="offcanvas offcanvas-start bg-blue-900 text-white" tabindex="-1" id="mobileSidebar"
+        aria-labelledby="mobileSidebarLabel">
+        <div class="offcanvas-header pt-6 px-6">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center mr-3 shadow-lg">
+                    <i class="fas fa-graduation-cap text-xl text-blue-600"></i>
+                </div>
+                <h5 class="offcanvas-title font-bold" id="mobileSidebarLabel">Student Tracker</h5>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-6 pt-0">
+            <nav class="space-y-1 mt-4">
+                <a href="index.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-home w-5 mr-3"></i>
+                    <span class="font-medium">Dashboard</span>
+                </a>
+                <a href="semesters.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-calendar-alt w-5 mr-3"></i>
+                    <span class="font-medium">Semesters</span>
+                </a>
+                <a href="courses.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-book w-5 mr-3"></i>
+                    <span class="font-medium">Courses</span>
+                </a>
+                <a href="assessments.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-clipboard-list w-5 mr-3"></i>
+                    <span class="font-medium">Assessments</span>
+                </a>
+                <a href="notes.html"
+                    class="sidebar-item active flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-sticky-note w-5 mr-3"></i>
+                    <span class="font-medium">Notes</span>
+                </a>
+                <a href="events.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-calendar w-5 mr-3"></i>
+                    <span class="font-medium">Events</span>
+                </a>
+                <a href="budget.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-wallet w-5 mr-3"></i>
+                    <span class="font-medium">Budget</span>
+                </a>
+                <a href="goals.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-bullseye w-5 mr-3"></i>
+                    <span class="font-medium">Goals</span>
+                </a>
+                <a href="tasks.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-tasks w-5 mr-3"></i>
+                    <span class="font-medium">Tasks</span>
+                </a>
+                <a href="habits.html"
+                    class="sidebar-item flex items-center px-4 py-3 rounded-lg text-white text-decoration-none">
+                    <i class="fas fa-chart-line w-5 mr-3"></i>
+                    <span class="font-medium">Habits</span>
+                </a>
+                <div class="pt-6 mt-6 border-t border-blue-400 border-opacity-30">
+                    <a href="#" onclick="handleLogout()"
+                        class="sidebar-item flex items-center px-4 py-3 rounded-lg text-red-200 hover:text-red-100 hover:bg-red-500 hover:bg-opacity-20 text-decoration-none">
+                        <i class="fas fa-sign-out-alt w-5 mr-3"></i>
+                        <span class="font-medium">Logout</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <div class="main-content">
         <!-- Top Header -->
-        <header class="bg-white shadow-sm px-8 py-5 flex items-center justify-between sticky top-0 z-50">
-            <div>
-                <div id="breadcrumbs" class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
-                    <a href="notes.html" class="hover:text-blue-600">Notes</a>
+        <header
+            class="bg-white shadow-sm px-4 md:px-8 py-4 md:py-5 flex items-center justify-between sticky top-0 z-50">
+            <div class="flex items-center">
+                <button class="btn btn-link link-dark d-md-none me-3 p-0" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#mobileSidebar">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div>
+                    <div id="breadcrumbs"
+                        class="flex items-center space-x-2 text-[10px] md:text-sm text-gray-500 mb-0 md:mb-1">
+                        <a href="notes.html" class="hover:text-blue-600">Notes</a>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-bold text-gray-800" id="pageTitle">Note Editor</h1>
                 </div>
-                <h1 class="text-2xl font-bold text-gray-800" id="pageTitle">Note Editor</h1>
             </div>
-            <div class="flex items-center space-x-3">
-                <button id="togglePinBtn" class="px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors font-medium">
-                    <i class="fas fa-thumbtack mr-2"></i><span id="pinText">Pin</span>
+            <div class="flex items-center space-x-1 md:space-x-3">
+                <button id="togglePinBtn"
+                    class="p-2 md:px-4 md:py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors font-medium text-xs md:text-sm">
+                    <i class="fas fa-thumbtack md:mr-2"></i><span id="pinText" class="d-none d-lg-inline">Pin</span>
                 </button>
-                <button id="toggleFavoriteBtn" class="px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors font-medium">
-                    <i class="fas fa-heart mr-2"></i><span id="favoriteText">Favorite</span>
+                <button id="toggleFavoriteBtn"
+                    class="p-2 md:px-4 md:py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors font-medium text-xs md:text-sm">
+                    <i class="fas fa-heart md:mr-2"></i><span id="favoriteText"
+                        class="d-none d-lg-inline">Favorite</span>
                 </button>
-                <button id="saveBtn" class="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium">
-                    <i class="fas fa-save mr-2"></i>Save
+                <button id="saveBtn"
+                    class="px-3 md:px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium text-xs md:text-sm">
+                    <i class="fas fa-save md:mr-2"></i>Save
                 </button>
             </div>
         </header>
-        
+
         <!-- Editor Area -->
         <div class="bg-white">
             <div class="editor-container">
                 <!-- Editor Pane -->
                 <div class="editor-pane">
-                    <input 
-                        type="text" 
-                        id="noteTitleInput"
-                        placeholder="Note title..."
-                        class="w-full px-8 py-4 text-3xl font-bold border-b border-gray-200 focus:outline-none focus:border-blue-500"
-                    >
+                    <input type="text" id="noteTitleInput" placeholder="Note title..."
+                        class="w-full px-8 py-4 text-3xl font-bold border-b border-gray-200 focus:outline-none focus:border-blue-500">
                     <!-- Attachments Section -->
                     <div id="attachmentsSection" class="px-8 py-4 border-b border-gray-200 bg-gray-50">
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="text-sm font-medium text-gray-700">Attachments</h3>
-                            <label class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 cursor-pointer transition-colors">
+                            <label
+                                class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 cursor-pointer transition-colors">
                                 <i class="fas fa-paperclip mr-1"></i>Add File
                                 <input type="file" id="fileInput" class="hidden" multiple>
                             </label>
@@ -273,10 +366,7 @@
                             <!-- Attachments will be displayed here -->
                         </div>
                     </div>
-                    <textarea 
-                        id="noteContentInput"
-                        class="markdown-editor"
-                        placeholder="# Start writing your note...
+                    <textarea id="noteContentInput" class="markdown-editor" placeholder="# Start writing your note...
 
 Use **Markdown** to format your text:
 
@@ -285,14 +375,13 @@ Use **Markdown** to format your text:
 - Headings with #
 - Code blocks
 - Lists
-- And more!"
-                    ></textarea>
+- And more!"></textarea>
                 </div>
             </div>
         </div>
     </div>
-    
-    
+
+
     <!-- Scripts -->
     <script src="js/api.js"></script>
     <script src="js/utils.js"></script>
@@ -305,42 +394,42 @@ Use **Markdown** to format your text:
         let isFavorite = false;
         let hasUnsavedChanges = false;
         let autoSaveTimeout = null;
-        
+
         // Check authentication
         if (!window.auth.isAuthenticated()) {
             window.location.href = 'https://studentorganizer.netlify.app/login.html';
         }
-        
+
         // Get note ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const noteId = urlParams.get('id');
-        
+
         if (!noteId) {
             window.location.href = 'notes.html';
         }
-        
+
         // Load note
         async function loadNote() {
             try {
                 const response = await window.api.getNote(noteId);
                 note = response.data || response.note || response;
-                
+
                 if (!note) {
                     alert('Note not found');
                     window.location.href = 'notes.html';
                     return;
                 }
-                
+
                 // Find course and semester
                 const semestersResponse = await window.api.getSemesters();
                 const semesters = semestersResponse.data || semestersResponse.semesters || semestersResponse || [];
-                
+
                 for (const sem of semesters) {
                     try {
                         const coursesResponse = await window.api.getCourses(sem.id);
                         const courses = coursesResponse.data || coursesResponse.courses || coursesResponse || [];
                         const foundCourse = courses.find(c => c.id === note.course_id);
-                        
+
                         if (foundCourse) {
                             course = foundCourse;
                             semester = sem;
@@ -350,7 +439,7 @@ Use **Markdown** to format your text:
                         console.error(`Error loading courses for semester ${sem.id}:`, error);
                     }
                 }
-                
+
                 // Update UI
                 displayNote();
             } catch (error) {
@@ -359,20 +448,20 @@ Use **Markdown** to format your text:
                 window.location.href = 'notes.html';
             }
         }
-        
+
         // Display note
         function displayNote() {
             document.getElementById('noteTitleInput').value = note.title || '';
             document.getElementById('noteContentInput').value = note.content || '';
             document.getElementById('pageTitle').textContent = note.title || 'Untitled Note';
-            
+
             isPinned = note.is_pinned || false;
             isFavorite = note.is_favorite || false;
-            
+
             // Load attachments
             if (note.attachments && Array.isArray(note.attachments)) {
                 console.log('Loading attachments from note:', note.attachments);
-                
+
                 // Handle both cases: array of IDs or array of objects
                 uploadedAttachments = note.attachments.map(att => {
                     // If attachment is a primitive (number/string), it's just an ID
@@ -383,21 +472,21 @@ Use **Markdown** to format your text:
                     const id = att.id || att.attachment_id || att.attachmentId || att.file_attachment_id || att;
                     return { ...att, id: parseInt(id) };
                 });
-                
+
                 attachments = uploadedAttachments.map(att => att.id).filter(id => id);
                 console.log('Loaded attachments:', uploadedAttachments);
                 console.log('Attachment IDs:', attachments);
-                
+
                 displayAttachments();
             } else {
                 uploadedAttachments = [];
                 attachments = [];
                 displayAttachments();
             }
-            
+
             updatePinButton();
             updateFavoriteButton();
-            
+
             // Update breadcrumbs
             if (course && semester) {
                 document.getElementById('breadcrumbs').innerHTML = `
@@ -409,23 +498,23 @@ Use **Markdown** to format your text:
                 `;
             }
         }
-        
+
         // Display attachments
         function displayAttachments() {
             const container = document.getElementById('attachmentsList');
-            
+
             if (uploadedAttachments.length === 0) {
                 container.innerHTML = '<p class="text-sm text-gray-400 italic">No attachments</p>';
                 return;
             }
-            
+
             container.innerHTML = uploadedAttachments.map((att, index) => {
                 const attachmentId = att.id;
                 const isPending = att.pending && att.file;
-                
+
                 const fileName = att.file_name || att.name || att.original_name || (attachmentId ? `Attachment ${attachmentId}` : 'Unknown file');
                 const fileSize = att.file_size ? formatFileSize(att.file_size) : '';
-                
+
                 return `
                     <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200">
                         <div class="flex items-center space-x-3 flex-1">
@@ -455,7 +544,7 @@ Use **Markdown** to format your text:
                 `;
             }).join('');
         }
-        
+
         // Format file size
         function formatFileSize(bytes) {
             if (!bytes) return '';
@@ -463,11 +552,11 @@ Use **Markdown** to format your text:
             if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
             return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
         }
-        
+
         // Handle file upload
         document.getElementById('fileInput').addEventListener('change', async (e) => {
             const files = Array.from(e.target.files);
-            
+
             for (const file of files) {
                 // If note doesn't exist yet, store file temporarily
                 if (!note || !note.id) {
@@ -492,18 +581,18 @@ Use **Markdown** to format your text:
                             uploading: true
                         });
                         displayAttachments();
-                        
+
                         // Upload file with note info (backend expects capitalized class name)
                         const response = await window.api.uploadAttachment(file, 'Note', note.id);
                         console.log('Upload response:', response);
-                        
+
                         const attachment = response.data || response.attachment || response;
                         console.log('Attachment object:', attachment);
-                        
+
                         // Try different possible ID field names
                         const attachmentId = attachment.id || attachment.attachment_id || attachment.attachmentId || attachment.file_attachment_id;
                         console.log('Extracted attachment ID:', attachmentId);
-                        
+
                         // Replace temp with real attachment
                         const index = uploadedAttachments.findIndex(a => a.id === tempId);
                         if (index !== -1) {
@@ -514,7 +603,7 @@ Use **Markdown** to format your text:
                                 console.error('Attachment missing ID:', attachment);
                             }
                         }
-                        
+
                         displayAttachments();
                         scheduleAutoSave();
                     } catch (error) {
@@ -526,16 +615,16 @@ Use **Markdown** to format your text:
                             size: file.size,
                             type: file.type
                         });
-                        
+
                         let errorMsg = error.message || 'Unknown error';
                         if (error.status === 422) {
                             errorMsg = `Validation failed: ${error.message}. Please check file size (max 10MB) and file type.`;
                         } else if (error.status === 413) {
                             errorMsg = 'File too large. Maximum size is 10MB.';
                         }
-                        
+
                         alert(`Failed to upload ${file.name}: ${errorMsg}`);
-                        
+
                         // Remove failed upload
                         if (tempId !== null) {
                             uploadedAttachments = uploadedAttachments.filter(a => a.id !== tempId);
@@ -544,18 +633,18 @@ Use **Markdown** to format your text:
                     }
                 }
             }
-            
+
             // Reset input
             e.target.value = '';
         });
-        
+
         // Download attachment
-        window.downloadAttachment = async function(attachmentId) {
+        window.downloadAttachment = async function (attachmentId) {
             if (!attachmentId || attachmentId === 'undefined') {
                 alert('Invalid attachment ID');
                 return;
             }
-            
+
             try {
                 const id = parseInt(attachmentId);
                 if (isNaN(id)) {
@@ -574,16 +663,16 @@ Use **Markdown** to format your text:
                 alert(`Failed to download file: ${error.message || 'Unknown error'}`);
             }
         };
-        
+
         // Remove attachment
-        window.removeAttachment = async function(attachmentId) {
+        window.removeAttachment = async function (attachmentId) {
             if (!attachmentId || attachmentId === 'undefined') {
                 alert('Invalid attachment ID');
                 return;
             }
-            
+
             if (!confirm('Are you sure you want to remove this attachment?')) return;
-            
+
             try {
                 const id = parseInt(attachmentId);
                 if (isNaN(id)) {
@@ -609,8 +698,8 @@ Use **Markdown** to format your text:
                 alert(`Failed to remove attachment: ${error.message || 'Unknown error'}`);
             }
         };
-        
-        
+
+
         // Auto-save
         function scheduleAutoSave() {
             hasUnsavedChanges = true;
@@ -619,17 +708,17 @@ Use **Markdown** to format your text:
                 saveNote(false);
             }, 2000); // Auto-save after 2 seconds of inactivity
         }
-        
+
         // Save note
         async function saveNote(showMessage = true) {
             const title = document.getElementById('noteTitleInput').value.trim();
             const content = document.getElementById('noteContentInput').value;
-            
+
             if (!title) {
                 alert('Please enter a title');
                 return;
             }
-            
+
             const data = {
                 title: title,
                 content: content,
@@ -637,21 +726,21 @@ Use **Markdown** to format your text:
                 is_favorite: isFavorite,
                 attachments: attachments, // Array of attachment IDs
             };
-            
+
             try {
                 await window.api.updateNote(noteId, data);
-                
+
                 // Upload pending attachments after saving
                 const pendingFiles = uploadedAttachments.filter(att => att.pending && att.file);
                 if (pendingFiles.length > 0 && note && note.id) {
                     const uploadedAttachmentIds = [];
-                    
+
                     for (const pendingFile of pendingFiles) {
                         try {
                             const response = await window.api.uploadAttachment(pendingFile.file, 'Note', note.id);
                             const attachment = response.data || response.attachment || response;
                             const attachmentId = attachment.id || attachment.attachment_id || attachment.attachmentId || attachment.file_attachment_id;
-                            
+
                             if (attachmentId) {
                                 uploadedAttachmentIds.push(attachmentId);
                                 // Replace pending file with uploaded attachment
@@ -665,7 +754,7 @@ Use **Markdown** to format your text:
                             alert(`Failed to upload "${pendingFile.file_name || pendingFile.name}": ${error.message || 'Unknown error'}`);
                         }
                     }
-                    
+
                     // Update note with all attachment IDs (including newly uploaded ones)
                     if (uploadedAttachmentIds.length > 0) {
                         const allAttachmentIds = [...attachments, ...uploadedAttachmentIds];
@@ -681,10 +770,10 @@ Use **Markdown** to format your text:
                             attachments.push(...uploadedAttachmentIds);
                         }
                     }
-                    
+
                     displayAttachments();
                 }
-                
+
                 hasUnsavedChanges = false;
                 if (showMessage) {
                     // Show temporary success indicator
@@ -702,13 +791,13 @@ Use **Markdown** to format your text:
                 alert('Failed to save note: ' + (error.message || 'Unknown error'));
             }
         }
-        
+
         // Remove pending attachment
-        window.removePendingAttachment = function(index) {
+        window.removePendingAttachment = function (index) {
             uploadedAttachments.splice(index, 1);
             displayAttachments();
         }
-        
+
         // Update pin button
         function updatePinButton() {
             const btn = document.getElementById('togglePinBtn');
@@ -723,7 +812,7 @@ Use **Markdown** to format your text:
                 text.textContent = 'Pin';
             }
         }
-        
+
         // Update favorite button
         function updateFavoriteButton() {
             const btn = document.getElementById('toggleFavoriteBtn');
@@ -738,7 +827,7 @@ Use **Markdown** to format your text:
                 text.textContent = 'Favorite';
             }
         }
-        
+
         // Toggle pin
         document.getElementById('togglePinBtn').addEventListener('click', async () => {
             try {
@@ -750,7 +839,7 @@ Use **Markdown** to format your text:
                 console.error('Error toggling pin:', error);
             }
         });
-        
+
         // Toggle favorite
         document.getElementById('toggleFavoriteBtn').addEventListener('click', async () => {
             try {
@@ -762,24 +851,24 @@ Use **Markdown** to format your text:
                 console.error('Error toggling favorite:', error);
             }
         });
-        
+
         // Save button
         document.getElementById('saveBtn').addEventListener('click', () => {
             saveNote(true);
         });
-        
+
         // Title input change
         document.getElementById('noteTitleInput').addEventListener('input', () => {
             document.getElementById('pageTitle').textContent = document.getElementById('noteTitleInput').value || 'Untitled Note';
             scheduleAutoSave();
         });
-        
+
         // Content input change
         document.getElementById('noteContentInput').addEventListener('input', () => {
             scheduleAutoSave();
         });
-        
-        
+
+
         // Warn before leaving with unsaved changes
         window.addEventListener('beforeunload', (e) => {
             if (hasUnsavedChanges) {
@@ -787,22 +876,19 @@ Use **Markdown** to format your text:
                 e.returnValue = '';
             }
         });
-        
+
         // Handle logout
-        document.getElementById('logoutButton').addEventListener('click', async (e) => {
-            e.preventDefault();
-            try {
-                await window.api.logout();
-            } catch (error) {
-                console.error('Logout error:', error);
-            } finally {
-                window.location.href = 'https://studentorganizer.netlify.app/login.html';
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.api.logout().then(() => {
+                    window.location.href = 'https://studentorganizer.netlify.app/login.html';
+                });
             }
-        });
-        
+        }
+
         // Initialize
         loadNote();
     </script>
 </body>
-</html>
 
+</html>
