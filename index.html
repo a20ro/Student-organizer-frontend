@@ -599,23 +599,26 @@
                     welcomeMsg.textContent = `Welcome back, ${emailName}!`;
                 }
 
-                // Load actual data from API - Consolidated call
+                // Load actual data from API - Consolidated call with robust fallback
                 console.log('Attempting to load dashboard summary...');
-                const summaryResponse = await window.api.getDashboardSummary();
-                console.log('✅ Dashboard summary response:', summaryResponse);
+                let summaryData = null;
+                try {
+                    const summaryResponse = await window.api.getDashboardSummary();
+                    console.log('✅ Dashboard summary response:', summaryResponse);
+                    summaryData = summaryResponse.data || summaryResponse;
 
-                // Extract data robustly
-                let data = summaryResponse.data || summaryResponse;
-
-                // If it's still wrapped (e.g., successful axios-like fetch) but not already extracted
-                if (data && !data.semesters && !data.tasks && !data.courses && summaryResponse.data) {
-                    data = summaryResponse.data;
+                    // If it's still wrapped but not extracted
+                    if (summaryData && !summaryData.semesters && !summaryData.tasks && summaryResponse.data) {
+                        summaryData = summaryResponse.data;
+                    }
+                } catch (summaryError) {
+                    console.warn('Dashboard summary call failed, will use individual calls:', summaryError);
                 }
 
-                if (data) {
+                if (summaryData && (summaryData.semesters || summaryData.tasks || summaryData.courses)) {
                     // Update user info if returned in summary
-                    if (data.user) {
-                        const summaryUser = data.user;
+                    if (summaryData.user) {
+                        const summaryUser = summaryData.user;
                         document.getElementById('userName').textContent = summaryUser.name || summaryUser.email || 'User';
                         const nameForInitials = summaryUser.name || summaryUser.email || '';
                         document.getElementById('userInitials').textContent = getUserInitials(nameForInitials);
@@ -626,14 +629,24 @@
                     }
 
                     // Distribute data to specific sections
-                    loadDashboardStats(data);
-                    loadUpcomingAssessments(data.assessments || []);
-                    loadTasks(data.tasks || [], data.goals || []);
-                    loadGoalsProgress(data.goals || []);
-                    loadTodaysEvents(data.events || []);
+                    await Promise.all([
+                        loadDashboardStats(summaryData),
+                        loadUpcomingAssessments(summaryData.assessments || []),
+                        loadTasks(summaryData.tasks || [], summaryData.goals || []),
+                        loadGoalsProgress(summaryData.goals || []),
+                        loadTodaysEvents(summaryData.events || []),
+                        loadNotesCount(summaryData.notes || null)
+                    ]);
                 } else {
-                    console.error('Invalid summary response structure:', summaryResponse);
-                    throw new Error('Failed to load dashboard summary data - Invalid structure');
+                    console.log('Using individual API calls for dashboard data...');
+                    await Promise.all([
+                        loadDashboardStats(),
+                        loadUpcomingAssessments(),
+                        loadTasks(),
+                        loadGoalsProgress(),
+                        loadTodaysEvents(),
+                        loadNotesCount()
+                    ]);
                 }
 
             } catch (error) {
@@ -1103,6 +1116,10 @@
                     document.getElementById('semesterCount').innerHTML = semesters.length;
                     document.getElementById('courseCount').innerHTML = courses.length;
 
+                    if (summaryData.notes) {
+                        document.getElementById('noteCount').innerHTML = summaryData.notes.length;
+                    }
+
                     // Load budget balance from summary stats or separate call
                     if (stats.net_balance !== undefined) {
                         const formattedBalance = new Intl.NumberFormat('en-US', {
@@ -1137,6 +1154,22 @@
                 console.error('Error loading dashboard stats:', error);
                 document.getElementById('semesterCount').innerHTML = '-';
                 document.getElementById('courseCount').innerHTML = '-';
+            }
+        }
+
+        // Load notes count
+        async function loadNotesCount(summaryNotes) {
+            try {
+                if (summaryNotes) {
+                    document.getElementById('noteCount').innerHTML = summaryNotes.length;
+                    return;
+                }
+                const response = await window.api.getNotes();
+                const notes = response.data || response.notes || response || [];
+                document.getElementById('noteCount').innerHTML = notes.length;
+            } catch (error) {
+                console.error('Error loading notes count:', error);
+                document.getElementById('noteCount').innerHTML = '-';
             }
         }
 
