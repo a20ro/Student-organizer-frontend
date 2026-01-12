@@ -599,12 +599,35 @@
                     welcomeMsg.textContent = `Welcome back, ${emailName}!`;
                 }
 
-                // Load actual data from API
-                await loadDashboardStats();
-                await loadUpcomingAssessments();
-                await loadTasks();
-                await loadGoalsProgress();
-                await loadTodaysEvents();
+                // Load actual data from API - Consolidated call
+                console.log('Attempting to load dashboard summary...');
+                const summaryResponse = await window.api.getDashboardSummary();
+                console.log('✅ Dashboard summary response:', summaryResponse);
+
+                if (summaryResponse.success && summaryResponse.data) {
+                    const data = summaryResponse.data;
+                    
+                    // Update user info if returned in summary
+                    if (data.user) {
+                        const summaryUser = data.user;
+                        document.getElementById('userName').textContent = summaryUser.name || summaryUser.email || 'User';
+                        const nameForInitials = summaryUser.name || summaryUser.email || '';
+                        document.getElementById('userInitials').textContent = getUserInitials(nameForInitials);
+                        
+                        const welcomeMsg = document.getElementById('welcomeMessage');
+                        const firstName = (summaryUser.name || '').split(' ')[0] || (summaryUser.email || '').split('@')[0];
+                        welcomeMsg.textContent = `Welcome back, ${firstName}!`;
+                    }
+
+                    // Distribute data to specific sections
+                    loadDashboardStats(data);
+                    loadUpcomingAssessments(data.assessments || []);
+                    loadTasks(data.tasks || [], data.goals || []);
+                    loadGoalsProgress(data.goals || []);
+                    loadTodaysEvents(data.events || []);
+                } else {
+                    throw new Error('Failed to load dashboard summary data');
+                }
 
             } catch (error) {
                 console.error('Error loading dashboard:', error);
@@ -1062,14 +1085,35 @@
         }
 
         // Load dashboard statistics
-        async function loadDashboardStats() {
+        async function loadDashboardStats(summaryData) {
             try {
-                // Load semesters count
+                if (summaryData) {
+                    // Use data from summary if provided
+                    const semesters = summaryData.semesters || [];
+                    const courses = summaryData.courses || [];
+                    const stats = summaryData.stats || {};
+
+                    document.getElementById('semesterCount').innerHTML = semesters.length;
+                    document.getElementById('courseCount').innerHTML = courses.length;
+                    
+                    // Load budget balance from summary stats or separate call
+                    if (stats.net_balance !== undefined) {
+                        const formattedBalance = new Intl.NumberFormat('en-US', {
+                            style: 'currency',
+                            currency: 'USD'
+                        }).format(stats.net_balance);
+                        document.getElementById('budgetBalance').textContent = formattedBalance;
+                    } else {
+                        await loadBudgetBalance();
+                    }
+                    return;
+                }
+
+                // Fallback to individual calls if no summary data
                 const semestersResponse = await window.api.getSemesters();
                 const semesters = semestersResponse.data || semestersResponse.semesters || semestersResponse || [];
                 document.getElementById('semesterCount').innerHTML = semesters.length;
 
-                // Load courses count (from all semesters)
                 let totalCourses = 0;
                 for (const semester of semesters) {
                     try {
@@ -1081,12 +1125,9 @@
                     }
                 }
                 document.getElementById('courseCount').innerHTML = totalCourses;
-
-                // Load budget balance
                 await loadBudgetBalance();
             } catch (error) {
                 console.error('Error loading dashboard stats:', error);
-                // Show error state
                 document.getElementById('semesterCount').innerHTML = '-';
                 document.getElementById('courseCount').innerHTML = '-';
             }
@@ -1122,13 +1163,25 @@
         }
 
         // Load upcoming assessments
-        async function loadUpcomingAssessments() {
+        async function loadUpcomingAssessments(summaryAssessments) {
             try {
-                // Get all semesters
+                if (summaryAssessments) {
+                    // Filter and sort summary assessments
+                    let assessments = summaryAssessments.filter(a => (a.status || '').toLowerCase() !== 'submitted');
+                    assessments.sort((a, b) => {
+                        if (!a.due_date) return 1;
+                        if (!b.due_date) return -1;
+                        return new Date(a.due_date) - new Date(b.due_date);
+                    });
+                    displayUpcomingAssessments(assessments.slice(0, 5));
+                    return;
+                }
+
+                // Fallback to individual calls
                 const semestersResponse = await window.api.getSemesters();
                 const semesters = semestersResponse.data || semestersResponse.semesters || semestersResponse || [];
-
-                // Get all courses and their assessments
+                // ... (rest of the existing logic for fallback)
+                // (Note: keeping original logic as fallback)
                 let allAssessments = [];
                 for (const semester of semesters) {
                     try {
@@ -1155,22 +1208,18 @@
                     }
                 }
 
-                // Filter out submitted assessments
                 allAssessments = allAssessments.filter(assessment => {
                     const status = (assessment.status || 'not_started').toLowerCase();
                     return status !== 'submitted';
                 });
 
-                // Sort by due date (upcoming first)
                 allAssessments.sort((a, b) => {
                     if (!a.due_date) return 1;
                     if (!b.due_date) return -1;
                     return new Date(a.due_date) - new Date(b.due_date);
                 });
 
-                // Show top 5 upcoming assessments
-                const upcoming = allAssessments.slice(0, 5);
-                displayUpcomingAssessments(upcoming);
+                displayUpcomingAssessments(allAssessments.slice(0, 5));
             } catch (error) {
                 console.error('Error loading upcoming assessments:', error);
             }
@@ -1271,70 +1320,62 @@
         }
 
         // Load tasks
-        async function loadTasks() {
+        async function loadTasks(summaryTasks, summaryGoals) {
             try {
-                // Show loading state
+                // Show loading state if no summary data
                 const container = document.getElementById('tasksList');
-                container.innerHTML = `
-                    <div class="p-6 bg-gray-50 rounded-lg border-l-4 border-gray-200">
-                        <p class="text-gray-500 text-sm">Loading tasks...</p>
-                    </div>
-                `;
-
-                // Load both tasks and goals in parallel
-                const [tasksResponse, goalsResponse] = await Promise.all([
-                    window.api.getTasks(),
-                    window.api.getGoals()
-                ]);
-
-                if (tasksResponse.success) {
-                    const allTasks = tasksResponse.data || [];
-                    const goals = goalsResponse.success ? (goalsResponse.data || []) : [];
-
-                    // Create a goals map for quick lookup
-                    const goalsMap = {};
-                    goals.forEach(goal => {
-                        goalsMap[goal.id] = goal;
-                    });
-
-                    // Filter out completed tasks (tasks use 'completed' boolean, not 'status')
-                    // Handle cases where completed might be null, undefined, false, true, or string
-                    const activeTasks = allTasks.filter(task => {
-                        // Check if task is completed - handle boolean, string, or number
-                        const isCompleted = task.completed === true ||
-                            task.completed === 'true' ||
-                            task.completed === 1 ||
-                            task.completed === '1';
-                        // Only show tasks that are NOT completed
-                        return !isCompleted;
-                    });
-
-                    console.log('Total tasks:', allTasks.length, 'Active tasks:', activeTasks.length);
-
-                    // Add goal title to each task
-                    activeTasks.forEach(task => {
-                        if (task.goal_id && goalsMap[task.goal_id]) {
-                            task.goal_title = goalsMap[task.goal_id].title;
-                        }
-                    });
-
-                    // Sort by due date (upcoming first, then no due date)
-                    activeTasks.sort((a, b) => {
-                        if (!a.due_date && !b.due_date) return 0;
-                        if (!a.due_date) return 1;
-                        if (!b.due_date) return -1;
-                        return new Date(a.due_date) - new Date(b.due_date);
-                    });
-
-                    // Show top 5 tasks
-                    const tasks = activeTasks.slice(0, 5);
-                    displayTasks(tasks);
-                } else {
-                    throw new Error('Failed to load tasks');
+                if (!summaryTasks) {
+                    container.innerHTML = `
+                        <div class="p-6 bg-gray-50 rounded-lg border-l-4 border-gray-200">
+                            <p class="text-gray-500 text-sm">Loading tasks...</p>
+                        </div>
+                    `;
                 }
+
+                let allTasks = [];
+                let goals = [];
+
+                if (summaryTasks) {
+                    allTasks = summaryTasks;
+                    goals = summaryGoals || [];
+                } else {
+                    // Fallback to individual calls
+                    const [tasksResponse, goalsResponse] = await Promise.all([
+                        window.api.getTasks(),
+                        window.api.getGoals()
+                    ]);
+                    if (tasksResponse.success) {
+                        allTasks = tasksResponse.data || [];
+                        goals = goalsResponse.success ? (goalsResponse.data || []) : [];
+                    } else {
+                        throw new Error('Failed to load tasks');
+                    }
+                }
+
+                const goalsMap = {};
+                goals.forEach(goal => { goalsMap[goal.id] = goal; });
+
+                const activeTasks = allTasks.filter(task => {
+                    const isCompleted = task.completed === true || task.completed === 'true' || task.completed === 1 || task.completed === '1';
+                    return !isCompleted;
+                });
+
+                activeTasks.forEach(task => {
+                    if (task.goal_id && goalsMap[task.goal_id]) {
+                        task.goal_title = goalsMap[task.goal_id].title;
+                    }
+                });
+
+                activeTasks.sort((a, b) => {
+                    if (!a.due_date && !b.due_date) return 0;
+                    if (!a.due_date) return 1;
+                    if (!b.due_date) return -1;
+                    return new Date(a.due_date) - new Date(b.due_date);
+                });
+
+                displayTasks(activeTasks.slice(0, 5));
             } catch (error) {
                 console.error('Error loading tasks:', error);
-                // Show error state
                 const container = document.getElementById('tasksList');
                 container.innerHTML = `
                     <div class="p-6 bg-gray-50 rounded-lg border-l-4 border-gray-200">
@@ -1400,9 +1441,14 @@
         }
 
         // Load goals progress
-        async function loadGoalsProgress() {
+        async function loadGoalsProgress(summaryGoals) {
             const container = document.getElementById('goalsList');
             try {
+                if (summaryGoals) {
+                    displayGoalsProgress(summaryGoals);
+                    return;
+                }
+
                 // Show loading state
                 container.innerHTML = `
                     <div class="p-6 bg-gray-50 rounded-lg border-l-4 border-gray-200">
@@ -1412,7 +1458,6 @@
 
                 const response = await window.api.getGoals();
                 const goals = response.data || response.goals || response || [];
-
                 displayGoalsProgress(goals);
             } catch (error) {
                 console.error('Error loading goals:', error);
@@ -1499,9 +1544,14 @@
         }
 
         // Load today's events
-        async function loadTodaysEvents() {
+        async function loadTodaysEvents(summaryEvents) {
             const container = document.getElementById('eventsList');
             try {
+                if (summaryEvents) {
+                    displayTodaysEvents(summaryEvents);
+                    return;
+                }
+
                 // Show loading state
                 container.innerHTML = `
                     <div class="p-6 bg-gray-50 rounded-lg border-l-4 border-gray-200">

@@ -728,6 +728,19 @@ async function deleteAttachment(attachmentId) {
     }
 }
 
+// Dashboard Summary API
+async function getDashboardSummary() {
+    try {
+        const response = await apiRequest('/dashboard/summary', {
+            method: 'GET',
+        });
+        return response;
+    } catch (error) {
+        console.error('Get dashboard summary error:', error);
+        throw error;
+    }
+}
+
 // Budget & Transactions API Functions
 async function getTransactions(params = {}) {
     try {
@@ -1501,6 +1514,8 @@ window.api = {
     uploadAttachment,
     downloadAttachment,
     deleteAttachment,
+    // Dashboard Summary
+    getDashboardSummary,
     // Transactions
     getTransactions,
     getTransaction,
