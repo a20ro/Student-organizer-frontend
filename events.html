@@ -657,38 +657,56 @@
                 const semestersResponse = await window.api.getSemesters();
                 const semesters = semestersResponse.data || semestersResponse.semesters || semestersResponse || [];
 
-                for (const semester of semesters) {
-                    let courses = [];
-                    try {
-                        const coursesResponse = await window.api.getCourses(semester.id);
-                        courses = coursesResponse.data || coursesResponse.courses || coursesResponse || [];
-                    } catch (error) {
-                        console.error(`Error loading courses for semester ${semester.id}:`, error);
-                    }
+                // Fetch all courses for all semesters in parallel
+                const coursesPromises = semesters.map(s =>
+                    window.api.getCourses(s.id).catch(err => {
+                        console.error(`Error loading courses for semester ${s.id}:`, err);
+                        return [];
+                    })
+                );
 
-                    for (const course of courses) {
-                        try {
-                            const assessmentsResponse = await window.api.getAssessments(course.id);
-                            const assessments = assessmentsResponse.data || assessmentsResponse.assessments || assessmentsResponse || [];
+                const coursesResponses = await Promise.all(coursesPromises);
 
-                            assessments.forEach(a => {
-                                if (!a.due_date) return;
-                                const date = new Date(a.due_date);
-                                if (isNaN(date.getTime())) return;
-                                if (date >= start && date <= end) {
-                                    results.push({
-                                        ...a,
-                                        course_name: course.name,
-                                        course_code: course.code,
-                                        semester_title: semester.title,
-                                    });
-                                }
+                // Map courses back to their semesters and prepare for assessment fetching
+                const courseAssessmentJobs = [];
+                coursesResponses.forEach((coursesRes, index) => {
+                    const semester = semesters[index];
+                    const courses = coursesRes.data || coursesRes.courses || coursesRes || [];
+
+                    courses.forEach(course => {
+                        courseAssessmentJobs.push({
+                            semester,
+                            course,
+                            promise: window.api.getAssessments(course.id).catch(err => {
+                                console.error(`Error loading assessments for course ${course.id}:`, err);
+                                return [];
+                            })
+                        });
+                    });
+                });
+
+                // Fetch all assessments in parallel
+                const assessmentsResponses = await Promise.all(courseAssessmentJobs.map(job => job.promise));
+
+                // Process results
+                assessmentsResponses.forEach((assessmentsRes, index) => {
+                    const job = courseAssessmentJobs[index];
+                    const assessments = assessmentsRes.data || assessmentsRes.assessments || assessmentsRes || [];
+
+                    assessments.forEach(a => {
+                        if (!a.due_date) return;
+                        const date = new Date(a.due_date);
+                        if (isNaN(date.getTime())) return;
+                        if (date >= start && date <= end) {
+                            results.push({
+                                ...a,
+                                course_name: job.course.name,
+                                course_code: job.course.code,
+                                semester_title: job.semester.title,
                             });
-                        } catch (error) {
-                            console.error(`Error loading assessments for course ${course.id}:`, error);
                         }
-                    }
-                }
+                    });
+                });
             } catch (error) {
                 console.error('Error loading assessments:', error);
             }
