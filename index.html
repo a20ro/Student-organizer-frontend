@@ -604,16 +604,22 @@
                 const summaryResponse = await window.api.getDashboardSummary();
                 console.log('✅ Dashboard summary response:', summaryResponse);
 
-                if (summaryResponse.success && summaryResponse.data) {
-                    const data = summaryResponse.data;
-                    
+                // Extract data robustly
+                let data = summaryResponse.data || summaryResponse;
+
+                // If it's still wrapped (e.g., successful axios-like fetch) but not already extracted
+                if (data && !data.semesters && !data.tasks && !data.courses && summaryResponse.data) {
+                    data = summaryResponse.data;
+                }
+
+                if (data) {
                     // Update user info if returned in summary
                     if (data.user) {
                         const summaryUser = data.user;
                         document.getElementById('userName').textContent = summaryUser.name || summaryUser.email || 'User';
                         const nameForInitials = summaryUser.name || summaryUser.email || '';
                         document.getElementById('userInitials').textContent = getUserInitials(nameForInitials);
-                        
+
                         const welcomeMsg = document.getElementById('welcomeMessage');
                         const firstName = (summaryUser.name || '').split(' ')[0] || (summaryUser.email || '').split('@')[0];
                         welcomeMsg.textContent = `Welcome back, ${firstName}!`;
@@ -626,7 +632,8 @@
                     loadGoalsProgress(data.goals || []);
                     loadTodaysEvents(data.events || []);
                 } else {
-                    throw new Error('Failed to load dashboard summary data');
+                    console.error('Invalid summary response structure:', summaryResponse);
+                    throw new Error('Failed to load dashboard summary data - Invalid structure');
                 }
 
             } catch (error) {
@@ -1095,7 +1102,7 @@
 
                     document.getElementById('semesterCount').innerHTML = semesters.length;
                     document.getElementById('courseCount').innerHTML = courses.length;
-                    
+
                     // Load budget balance from summary stats or separate call
                     if (stats.net_balance !== undefined) {
                         const formattedBalance = new Intl.NumberFormat('en-US', {
