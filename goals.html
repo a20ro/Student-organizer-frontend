@@ -554,13 +554,6 @@
             return div.innerHTML;
         }
 
-        function handleLogout() {
-            if (confirm('Are you sure you want to logout?')) {
-                window.api.logout().then(() => {
-                    window.location.href = 'https://studentorganizer.netlify.app/login.html';
-                });
-            }
-        }
 
         window.toggleComplete = toggleComplete;
         window.editGoal = editGoal;

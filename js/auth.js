@@ -36,19 +36,19 @@ function redirectIfAuthenticated() {
 function initAuth() {
     // Get current page
     const currentPage = window.location.pathname;
-    
+
     // Pages that require authentication
     const protectedPages = ['/index.html', '/dashboard.html'];
-    
+
     // Pages that should redirect if authenticated
     const authPages = ['/login.html', '/register.html'];
-    
+
     // Don't auto-protect index.html - it has its own auth check in loadDashboardData
     // This prevents race conditions when redirecting from OAuth
     if (protectedPages.some(page => currentPage.includes(page)) && !currentPage.includes('index.html')) {
         protectRoute();
     }
-    
+
     // Check if current page is auth page
     if (authPages.some(page => currentPage.includes(page))) {
         // Add small delay to allow token to be set after OAuth redirect
@@ -61,10 +61,29 @@ function initAuth() {
 // Run on page load
 document.addEventListener('DOMContentLoaded', initAuth);
 
+/**
+ * Global logout handler
+ */
+async function handleLogout() {
+    try {
+        if (window.api && typeof window.api.logout === 'function') {
+            await window.api.logout();
+        }
+    } catch (error) {
+        console.error('Logout error:', error);
+    } finally {
+        window.location.href = 'https://studentorganizer.netlify.app/login.html';
+    }
+}
+
 // Export functions
 window.auth = {
     isAuthenticated,
     protectRoute,
     redirectIfAuthenticated,
+    handleLogout,
 };
+
+// Also expose handleLogout globally for easier access in onclick handlers
+window.handleLogout = handleLogout;
 

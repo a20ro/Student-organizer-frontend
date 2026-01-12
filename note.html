@@ -878,13 +878,6 @@ Use **Markdown** to format your text:
         });
 
         // Handle logout
-        function handleLogout() {
-            if (confirm('Are you sure you want to logout?')) {
-                window.api.logout().then(() => {
-                    window.location.href = 'https://studentorganizer.netlify.app/login.html';
-                });
-            }
-        }
 
         // Initialize
         loadNote();

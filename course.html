@@ -711,17 +711,7 @@
             }
         });
 
-        // Handle logout
-        document.getElementById('logoutButton').addEventListener('click', async (e) => {
-            e.preventDefault();
-            try {
-                await window.api.logout();
-            } catch (error) {
-                console.error('Logout error:', error);
-            } finally {
-                window.location.href = 'https://studentorganizer.netlify.app/login.html';
-            }
-        });
+        // Logout is handled by the global handleLogout function
 
         // Initialize
         loadCourse();

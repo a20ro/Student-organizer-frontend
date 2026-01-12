@@ -510,17 +510,8 @@
                 return;
             }
 
-            // Logout
-            document.getElementById('logoutButton').addEventListener('click', async (e) => {
-                e.preventDefault();
-                try {
-                    await window.api.logout();
-                } catch (error) {
-                    console.error('Logout error:', error);
-                } finally {
-                    window.location.href = 'https://studentorganizer.netlify.app/login.html';
-                }
-            });
+            // Event listeners are already handled by handleLogout() global function
+            // or by direct element listeners if elements exist
 
             document.getElementById('toggleAssessments').addEventListener('change', (e) => {
                 showAssessments = e.target.checked;
@@ -558,6 +549,7 @@
         });
 
         async function initMonthFromUser() {
+            currentMonthDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
             try {
                 const userRes = await window.api.getCurrentUser();
                 const user = userRes.user || userRes.data || userRes;
@@ -572,7 +564,6 @@
             } catch (err) {
                 console.warn('Could not load user info for month init, defaulting to current month.', err);
             }
-            currentMonthDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         }
 
         function formatDateKey(date) {
